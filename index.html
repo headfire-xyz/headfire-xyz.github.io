@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Countdown Timer</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #FFFFFF;
+            font-family: Times New Roman, serif; /* Updated font */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .countdown {
+            font-size: 132px; /* Increased font size by 50 pixels */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .countdown span {
+            padding: 0 10px; /* Added padding between the digits */
+        }
+    </style>
+    <script>
+        // Countdown function
+        function countdown() {
+            var countdownDate = new Date("July 14, 2023 00:00:00").getTime();
+
+            var x = setInterval(function() {
+                var now = new Date().getTime();
+                var distance = countdownDate - now;
+
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // Add leading zero for single-digit values
+                days = padDigits(days, 2);
+                hours = padDigits(hours, 2);
+                minutes = padDigits(minutes, 2);
+                seconds = padDigits(seconds, 2);
+
+                document.getElementById("countdown").innerHTML = days + ":" + hours + ":"
+                + minutes + ":" + seconds;
+
+                if (distance < 0) {
+                    clearInterval(x);
+                    document.getElementById("countdown").innerHTML = "EXPIRED";
+                }
+            }, 1000);
+        }
+
+        // Function to add leading zero for single-digit values
+        function padDigits(number, digits) {
+            return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number;
+        }
+
+        // Call the countdown function when the page loads
+        window.onload = function() {
+            countdown();
+        };
+    </script>
+</head>
+<body>
+    <div class="countdown" id="countdown"></div>
+
+    <!-- Placeholder for Spotify embed -->
+    <div id="spotify-embed">
+        <!-- Replace with your Spotify embed code -->
+    </div>
+
+    <!-- Placeholder for Apple Music embed -->
+    <div id="apple-music-embed">
+        <!-- Replace with your Apple Music embed code -->
+    </div>
+</body>
+</html>
