@@ -36,18 +36,26 @@
   </div>
 
   <script>
-    const spans = document.querySelectorAll('.text span');
-    let index = 0;
+    function revealLetters() {
+      const spans = document.querySelectorAll('.text span');
+      let index = 0;
 
-    function revealLetter() {
-      if (index < spans.length) {
-        spans[index].classList.remove('hidden');
-        index++;
-        setTimeout(revealLetter, 500);
+      function revealLetter() {
+        if (index < spans.length) {
+          spans[index].classList.remove('hidden');
+          index++;
+          setTimeout(revealLetter, 500);
+        } else {
+          index = 0;
+          spans.forEach(span => span.classList.add('hidden'));
+          setTimeout(revealLetter, 500);
+        }
       }
+
+      revealLetter();
     }
 
-    revealLetter();
+    revealLetters();
   </script>
 </body>
 </html>
