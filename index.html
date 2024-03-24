@@ -9,17 +9,16 @@
     background-color: black;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     height: 100vh;
+    overflow: hidden;
   }
 
   .text {
     font-family: 'Times New Roman', Times, serif;
     color: white;
     font-size: 36px;
-    white-space: pre;
+    position: absolute;
+    cursor: move;
   }
 
   .hidden {
@@ -28,31 +27,94 @@
 </style>
 </head>
 <body>
-  <div class="text">
-    <span class="hidden">s</span>
-    <span class="hidden">o</span>
-    <span class="hidden">o</span>
-    <span class="hidden">n</span>
-  </div>
-
   <script>
     function revealLetters() {
-      const spans = document.querySelectorAll('.text span');
-      let index = 0;
+      const container = document.body;
+      const text = "soon";
+      const numLetters = text.length;
+      const delayMultiplier = 100; // Adjust the delay multiplier as needed
+      const maxShift = 100; // Maximum shift distance from original position
 
-      function revealLetter() {
-        if (index < spans.length) {
-          spans[index].classList.remove('hidden');
-          index++;
-          setTimeout(revealLetter, 500);
-        } else {
-          index = 0;
-          spans.forEach(span => span.classList.add('hidden'));
-          setTimeout(revealLetter, 500);
+      function createLetter(letter) {
+        const span = document.createElement("span");
+        span.textContent = letter;
+        span.classList.add("text");
+        span.classList.add("hidden");
+        container.appendChild(span);
+        return span;
+      }
+
+      function getRandomPosition() {
+        const x = Math.random() * (window.innerWidth - 100);
+        const y = Math.random() * (window.innerHeight - 100);
+        return { x, y };
+      }
+
+      const letters = [];
+      for (let i = 0; i < numLetters; i++) {
+        const letter = createLetter(text[i]);
+        letters.push(letter);
+      }
+
+      letters.forEach(letter => {
+        const position = getRandomPosition();
+        letter.style.left = position.x + "px";
+        letter.style.top = position.y + "px";
+        letter.addEventListener("mousedown", handleMouseDown);
+      });
+
+      function revealLetterWithDelay(index, delay) {
+        setTimeout(() => {
+          letters[index].classList.remove("hidden");
+        }, delay * delayMultiplier);
+      }
+
+      function revealAllLetters() {
+        for (let i = 0; i < numLetters; i++) {
+          revealLetterWithDelay(i, i);
         }
       }
 
-      revealLetter();
+      revealAllLetters();
+
+      let selectedLetter;
+      let initialMouseX;
+      let initialMouseY;
+      let initialLetterX;
+      let initialLetterY;
+
+      function handleMouseDown(event) {
+        selectedLetter = event.target;
+        initialMouseX = event.clientX;
+        initialMouseY = event.clientY;
+        initialLetterX = parseFloat(selectedLetter.style.left);
+        initialLetterY = parseFloat(selectedLetter.style.top);
+
+        document.addEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mouseup", handleMouseUp);
+      }
+
+      function handleMouseMove(event) {
+        const deltaX = event.clientX - initialMouseX;
+        const deltaY = event.clientY - initialMouseY;
+        selectedLetter.style.left = initialLetterX + deltaX + "px";
+        selectedLetter.style.top = initialLetterY + deltaY + "px";
+
+        letters.forEach(letter => {
+          if (letter !== selectedLetter) {
+            const dx = parseFloat(selectedLetter.style.left) - parseFloat(letter.style.left);
+            const dy = parseFloat(selectedLetter.style.top) - parseFloat(letter.style.top);
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const delay = Math.min(1, distance / maxShift);
+            letter.style.transitionDelay = delay + "s";
+          }
+        });
+      }
+
+      function handleMouseUp() {
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      }
     }
 
     revealLetters();
