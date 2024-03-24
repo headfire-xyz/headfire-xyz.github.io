@@ -32,8 +32,7 @@
       const container = document.body;
       const text = "soon";
       const numLetters = text.length;
-      const delayMultiplier = 100; // Adjust the delay multiplier as needed
-      const maxShift = 100; // Maximum shift distance from original position
+      const distanceBetweenLetters = 100;
 
       function createLetter(letter) {
         const span = document.createElement("span");
@@ -44,38 +43,22 @@
         return span;
       }
 
-      function getRandomPosition() {
-        const x = Math.random() * (window.innerWidth - 100);
-        const y = Math.random() * (window.innerHeight - 100);
-        return { x, y };
-      }
-
       const letters = [];
       for (let i = 0; i < numLetters; i++) {
         const letter = createLetter(text[i]);
+        letter.style.left = (i * distanceBetweenLetters) + "px";
         letters.push(letter);
       }
 
-      letters.forEach(letter => {
-        const position = getRandomPosition();
-        letter.style.left = position.x + "px";
-        letter.style.top = position.y + "px";
-        letter.addEventListener("mousedown", handleMouseDown);
-      });
-
-      function revealLetterWithDelay(index, delay) {
+      function revealLetterWithDelay(index) {
         setTimeout(() => {
           letters[index].classList.remove("hidden");
-        }, delay * delayMultiplier);
+        }, index * 500);
       }
 
-      function revealAllLetters() {
-        for (let i = 0; i < numLetters; i++) {
-          revealLetterWithDelay(i, i);
-        }
+      for (let i = 0; i < numLetters; i++) {
+        revealLetterWithDelay(i);
       }
-
-      revealAllLetters();
 
       let selectedLetter;
       let initialMouseX;
@@ -99,22 +82,16 @@
         const deltaY = event.clientY - initialMouseY;
         selectedLetter.style.left = initialLetterX + deltaX + "px";
         selectedLetter.style.top = initialLetterY + deltaY + "px";
-
-        letters.forEach(letter => {
-          if (letter !== selectedLetter) {
-            const dx = parseFloat(selectedLetter.style.left) - parseFloat(letter.style.left);
-            const dy = parseFloat(selectedLetter.style.top) - parseFloat(letter.style.top);
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            const delay = Math.min(1, distance / maxShift);
-            letter.style.transitionDelay = delay + "s";
-          }
-        });
       }
 
       function handleMouseUp() {
         document.removeEventListener("mousemove", handleMouseMove);
         document.removeEventListener("mouseup", handleMouseUp);
       }
+
+      letters.forEach(letter => {
+        letter.addEventListener("mousedown", handleMouseDown);
+      });
     }
 
     revealLetters();
